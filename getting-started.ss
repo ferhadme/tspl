@@ -242,3 +242,86 @@ cons ;; => #<procedure cons>
 ((car (cdr (list + - * /))) 17 5)
 ((car (- * /)) 17 5)
 (- 17 5) ;; => 12
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; variables and let expressions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; General form of let expression
+(let ((var expr) ...) body1 body2 ...)
+;; () == [], so:
+(let ([var expr] ...) body1 body2 ...)
+
+;; The variables bound by let are visible only within the body of the let.
+(let ([+ *])
+  (+ 2 3)) ;; => 6
+(+ 2 3) ;; => 5
+
+;; It is possible to nest let expressions.
+(let ([a 4] [b -3])
+  (let ([a-squared (* a a)]
+        [b-squared (* b b)])
+    (+ a-squared b-squared))) ;; => 25
+
+;; The inner binding for x is said to shadow the outer binding.
+;; A let-bound variable is visible everywhere within the body of its let expression except where it is shadowed.
+;; The region where a variable binding is visible is called its scope.
+;; The scope of the first x in the example above is the body of the outer let expression minus the body of the inner let expression, where it is shadowed by the second x.
+;; This form of scoping is referred to as lexical scoping, since the scope of each binding can be determined by a straightforward textual analysis of the program.
+(let ([x 1])
+  (let ([x (+ x 1)])
+    (+ x x))) ;; => 4
+
+
+;; Exercise 2.4.1
+(+ (- (* 3 a) b) (+ (* 3 a) b))
+(let ([mul3a (* 3 a)])
+  (+ (- mul3a b) (+ mul3a b)))
+
+(cons (car (list a b c)) (cdr (list a b c)))
+(let ([lst (list a b c)])
+  (cons (car lst) (cdr lst)))
+
+
+;; Exercise 2.4.2
+(let ([x 9])
+  (* x
+     (let ([x (/ x 3)])
+       (+ x x)))) ;; => 54
+(* 9 (+ 3 3)) ;; => 54
+
+
+;; Exercise 2.4.3
+(let ([x 'a] [y 'b])
+  (list (let ([x 'c]) (cons x y))
+        (let ([y 'd]) (cons x y))))
+(let ([x 'a] [y 'b])
+  (list (let ([inner-x 'c]) (cons inner-x y))
+        (let ([inner-y 'd]) (cons x inner-y))))
+
+(let ([x '((a b) c)])
+  (cons (let ([x (cdr x)])
+          (car x))
+        (let ([x (car x)])
+          (cons (let ([x (cdr x)])
+                  (car x))
+                (cons (let ([x (car x)])
+                        x)
+                      (cdr x))))))
+(let ([x '((a b) c)])
+  (cons (let ([x1 (cdr x)])
+          (car x1))
+        (let ([x2 (car x)])
+          (cons (let ([x3 (cdr x2)])
+                  (car x3))
+                (cons (let ([x4 (car x2)])
+                        x4)
+                      (cdr x2))))))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; lambda expressions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;
