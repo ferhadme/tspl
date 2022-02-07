@@ -232,3 +232,13 @@ cons ;; => #<procedure cons>
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; evaluating scheme expressions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; The evaluation of a quote expression is more similar to the evaluation of constant objects. The value of a quote expression of the form (quote object) is simply object.
+;; Procedures are also variables
+
+
+
+;; Exercise 2.3.1
+((car (cdr (list + - * /))) 17 5)
+((car (- * /)) 17 5)
+(- 17 5) ;; => 12
