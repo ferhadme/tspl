@@ -172,3 +172,63 @@ cons ;; => #<procedure cons>
 
 
 ;; Exercise 2.2.4
+'((a b) (c d)) ;; b c d
+(car (cdr (car '((a b) (c d))))) ;; => b
+(car (car (cdr '((a b) (c d))))) ;; => c
+(car (cdr (car (cdr '((a b) (c d)))))) ;; => d
+
+
+;; Exercise 2.2.5
+(cons
+ (cons 'a 'b)
+ (cons
+  (cons
+   (cons 'c '())
+   (cons 'd '()))
+  (cons '() '())))
+
+
+;; Exercise 2.2.6
+(cons 1
+      (cons '(2 . ((3) . ()))
+            (cons '(())
+                  (cons 4 5)))) ;; => (1 (2 (3)) (()) 4 . 5)
+#|
+1    |
+ |       |
+2 |    () |
+ | '     4 5
+3 '
+
+(1 (2 (3)) (()) 4 . 5)
+|#
+
+
+;; Exercise 2.2.7
+'((a b) (c d))
+(car '((a b) (c d))) ;; => (a b)
+(car '(a b)) ;; => a
+(cdr '(a b)) ;; => (b)
+(car '(b)) ;; => b
+(cdr '(b)) ;; => ()
+(cdr '((a b) (c d))) ;; => ((c d))
+(car '(c d)) ;; => c
+(cdr '(c d)) ;; => (d)
+(car '(d)) ;; => d
+(cdr '(d)) ;; => ()
+
+
+;; Exercise 2.2.8
+;; (procedure arg1 ... argn)
+;; Find the value of procedure
+;; Find the value of arg1
+;; Find the value of argn
+;; Apply the value of procedure to values of arg1 ... argn
+;; This steps go recursively
+((car (list + - * /)) 2 3)
+(+ 2 3) ;; => 5
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; evaluating scheme expressions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
