@@ -324,4 +324,55 @@ cons ;; => #<procedure cons>
 ;; lambda expressions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; The general form of a lambda expression
+(lambda (var ...) body1 body2 ...) ;; => #<procedure>
+((lambda (x) (+ x x)) (* 3 4)) ;; => 24
+
+;; Incidentally, a let expression is nothing more than the direct application of a lambda expression to a set of argument expressions
+(let ([x 'a]) (cons x x)) ;; => (a . a)
+((lambda (x) (cons x x)) 'a) ;; => (a . a)
+
+
+
+;; Exercise 2.5.1
+(let ([f (lambda (x) x)])
+  (f 'a)) ;; => a
+
+(let ([f (lambda x x)])
+  (f 'a)) ;; => (a)
+
+(let ([f (lambda (x . y) x)])
+  (f 'a)) ;; => a
+
+(let ([f (lambda (x . y) y)])
+  (f 'a)) ;; => ()
+
+
+;; Exercise 2.5.2
+(define list
+  (lambda x
+    (if (null? x) '()
+        (cons (car x)
+              (cdr x)))))
+
+
+;; Exercise 2.5.3
+(lambda (f x) (f x)) ;; there is not
+(lambda (x) (+ x x)) ;; + procedure
+(lambda (x y) (f x y)) ;; f procedure
+
+(lambda (x)
+  (cons x (f x y))) ;; cons f procedures, y variable
+
+(lambda (x)
+  (let ([z (cons x y)])
+    (x y z))) ;; cons procedure, y variable
+
+(lambda (x)
+  (let ([y (cons x y)])
+    (x y z))) ;; cons procedure, y z variable
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
