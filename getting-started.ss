@@ -280,7 +280,7 @@ cons ;; => #<procedure cons>
   (+ (- mul3a b) (+ mul3a b)))
 
 (cons (car (list a b c)) (cdr (list a b c)))
-(let ([lst (list a b c)])
+p(let ([lst (list a b c)])
   (cons (car lst) (cdr lst)))
 
 
@@ -354,6 +354,8 @@ cons ;; => #<procedure cons>
     (if (null? x) '()
         (cons (car x)
               (cdr x)))))
+;; or
+(define list (lambda x x))
 
 
 ;; Exercise 2.5.3
@@ -374,5 +376,41 @@ cons ;; => #<procedure cons>
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
+;; top-level definitions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define double-any
+  (lambda (f x)
+    (f x x)))
+
+(define doubler
+  (lambda (f)
+    (lambda (x) (f x x))))
+
+(define double/+ (doubler +))
+(double/+ 2 2) ;; => 4
+
+
+
+;; Exercise 2.6.1
+(double-any double-any double-any)
+;; Causes infinite loop
+
+
+;; Exercise 2.6.2
+(define compose
+  (lambda (f1 f2)
+    (lambda (x) (f1 (f2 x)))))
+
+(define cadr (compose car cdr))
+(cadr '(1 2 3 4)) ;; => 2
+(define cddr (compose cdr cdr))
+(cddr '(1 2 3 4)) ;; => '(3 4)
+
+
+;; Exercise 2.6.3
+(define caar (compose car car))
+(define cdar (compose cdr car))
+(define caaar (compose caar car))
+(define caadr (compose caar cdr))
+
