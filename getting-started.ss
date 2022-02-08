@@ -414,3 +414,67 @@ p(let ([lst (list a b c)])
 (define caaar (compose caar car))
 (define caadr (compose caar cdr))
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; conditional expressions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define abs
+  (lambda (n)
+    (if (< n 0) (- 0 n)
+        n)))
+
+;; Why is if a syntactic form and not a procedure?
+(define reciprocal
+  (lambda (n)
+    (if (= n 0)
+        "Oops!"
+        (/ 1 n))))
+;; IF if were a procedure, then scheme would be evaluate all of its arguments in order to apply them to the procedure
+;; In this case there would be no way to write reciprocal procedure for values where n = 0
+;; That's why if a syntactic form, not a procedure
+;; or, and, if, cond all belongs to syntactic form class
+
+;; every scheme object has truth value
+;; 1, #t, '(), '(1 2 3) -> true
+;; #f -> false
+
+(define reciprocal
+  (lambda (n)
+    (and (not (= n 0))
+         (/ 1 n))))
+
+;; type predicates
+(pair? '(1 2 3)) ;; => #t
+(pair? '(1 . 3)) ;; => #t
+(pair? '()) ;; => #f
+
+(define reciprocal
+  (lambda (n)
+    (if (and (number? n) (not (= n 0)))
+        (/ 1 n)
+        (assertion-violation 'reciprocal "improper argument" n))))
+
+
+
+;; Exercise 2.7.1
+(define atom?
+  (lambda (x)
+    (if (pair? x) #f
+        #t)))
+
+
+;; Exercise 2.7.2
+(define shorter
+  (lambda (lst1 lst2)
+    (let ([len1 (length lst1)]
+          [len2 (length lst2)])
+      (if (<= len1 len2) lst1 lst2))))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; simple recursion
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+
