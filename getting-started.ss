@@ -21,9 +21,9 @@
   (lambda (n)
     (* n n)))
 (square 5) ;; => 25
-(square -200) ;; => 25
-(square 0.5) ;; => 25
-(square -1/2) ;; => 25
+(square -200) ;; => 40000
+(square 0.5) ;; => 0.25
+(square -1/2) ;; => 1/4
 
 (define reciprocal
   (lambda (n)
@@ -476,5 +476,132 @@ p(let ([lst (list a b c)])
 ;; simple recursion
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(define goodbye
+  (lambda ()
+    (goodbye)))
+;; Most recursive procedures should have at least two basic elements, a base case and a recursion step
+
+(define length
+  (lambda (lst)
+    (if (null? lst)
+        0
+        (+ 1
+           (length (cdr lst))))))
+
+(define copy-list
+  (lambda (lst)
+    (if (null? lst)
+        '()
+        (cons (car lst)
+              (copy-list (cdr lst))))))
+
+(define memv
+  (lambda (obj lst)
+    (cond
+     [(null? lst) #f]
+     [(equal? obj (car lst)) #t]
+     [else (memv obj (cdr lst))])))
+
+(define remv
+  (lambda (obj lst)
+    (cond
+     [(null? lst) '()]
+     [(equal? obj (car lst))
+      (remv obj (cdr lst))]
+     [else (cons (car lst) (remv obj (cdr lst)))])))
+
+(define tree-copy
+  (lambda (tr)
+    (if (not (pair? tr))
+        tr
+        (cons
+         (tree-copy (car tr))
+         (tree-copy (cdr tr))))))
+
+;; restricted version of map function for one procedure and one list
+(define map1
+  (lambda (p lst)
+    (if (null? lst)
+        '()
+        (cons (p (car lst))
+              (map1 p (cdr lst))))))
 
 
+
+;; Exercise 2.8.1
+(define tree-copy
+  (lambda (tr)
+    (if (not (pair? tr))
+        tr
+        (cons
+         (tree-copy (cdr tr))
+         (tree-copy (car tr))))))
+(tree-copy '((1 2) (3 4))) ;; => ((() (() . 4) . 3) (() . 2) . 1)
+
+
+;; Exercise 2.8.2
+(define append1
+  (lambda (lst1 lst2)
+    (if (null? lst1) lst2
+        (cons (car lst1)
+              (append1 (cdr lst1) lst2)))))
+
+
+;; Exercise 2.8.3
+(define make-list
+  (lambda (n obj)
+    (if (= n 0)
+        '()
+        (cons obj
+              (make-list (- n 1) obj)))))
+
+
+;; Exercise 2.8.4
+(define list-ref
+  (lambda (lst nth)
+    (if (= nth 0)
+        (car lst)
+        (list-ref (cdr lst) (- nth 1)))))
+
+(define list-tail
+  (lambda (lst nth)
+    (if (= nth 0)
+        lst
+        (list-tail (cdr lst) (- nth 1)))))
+
+
+;; Exercise 2.8.5
+(define shorter?
+  (lambda (shorter longer)
+    (cond [(null? shorter) #t]
+          [(null? longer) #f]
+          [else
+           (shorter? (cdr shorter) (cdr longer))])))
+
+
+;; Exercise 2.8.6
+(define even?
+  (lambda (x)
+    (if (= x 0)
+        #t
+        (odd? (- x 1)))))
+(define odd?
+  (lambda (x)
+    (if (= x 0)
+        #f
+        (even? (- x 1)))))
+
+
+;; Exercise 2.8.7
+(define transpose
+  (lambda (lst)
+    (cons
+     (map car lst)
+     (map cdr lst))))
+
+(transpose '((a . 1) (b . 2) (c . 3))) ;; => ((a b c) 1 2 3)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; assignment
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
