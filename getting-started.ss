@@ -280,8 +280,8 @@ cons ;; => #<procedure cons>
   (+ (- mul3a b) (+ mul3a b)))
 
 (cons (car (list a b c)) (cdr (list a b c)))
-p(let ([lst (list a b c)])
-  (cons (car lst) (cdr lst)))
+p(let ([q (list a b c)])
+  (cons (car q) (cdr q)))
 
 
 ;; Exercise 2.4.2
@@ -466,10 +466,10 @@ p(let ([lst (list a b c)])
 
 ;; Exercise 2.7.2
 (define shorter
-  (lambda (lst1 lst2)
-    (let ([len1 (length lst1)]
-          [len2 (length lst2)])
-      (if (<= len1 len2) lst1 lst2))))
+  (lambda (q1 q2)
+    (let ([len1 (length q1)]
+          [len2 (length q2)])
+      (if (<= len1 len2) q1 q2))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -482,33 +482,33 @@ p(let ([lst (list a b c)])
 ;; Most recursive procedures should have at least two basic elements, a base case and a recursion step
 
 (define length
-  (lambda (lst)
-    (if (null? lst)
+  (lambda (q)
+    (if (null? q)
         0
         (+ 1
-           (length (cdr lst))))))
+           (length (cdr q))))))
 
 (define copy-list
-  (lambda (lst)
-    (if (null? lst)
+  (lambda (q)
+    (if (null? q)
         '()
-        (cons (car lst)
-              (copy-list (cdr lst))))))
+        (cons (car q)
+              (copy-list (cdr q))))))
 
 (define memv
-  (lambda (obj lst)
+  (lambda (obj q)
     (cond
-     [(null? lst) #f]
-     [(equal? obj (car lst)) #t]
-     [else (memv obj (cdr lst))])))
+     [(null? q) #f]
+     [(equal? obj (car q)) #t]
+     [else (memv obj (cdr q))])))
 
 (define remv
-  (lambda (obj lst)
+  (lambda (obj q)
     (cond
-     [(null? lst) '()]
-     [(equal? obj (car lst))
-      (remv obj (cdr lst))]
-     [else (cons (car lst) (remv obj (cdr lst)))])))
+     [(null? q) '()]
+     [(equal? obj (car q))
+      (remv obj (cdr q))]
+     [else (cons (car q) (remv obj (cdr q)))])))
 
 (define tree-copy
   (lambda (tr)
@@ -520,11 +520,11 @@ p(let ([lst (list a b c)])
 
 ;; restricted version of map function for one procedure and one list
 (define map1
-  (lambda (p lst)
-    (if (null? lst)
+  (lambda (p q)
+    (if (null? q)
         '()
-        (cons (p (car lst))
-              (map1 p (cdr lst))))))
+        (cons (p (car q))
+              (map1 p (cdr q))))))
 
 
 
@@ -541,10 +541,10 @@ p(let ([lst (list a b c)])
 
 ;; Exercise 2.8.2
 (define append1
-  (lambda (lst1 lst2)
-    (if (null? lst1) lst2
-        (cons (car lst1)
-              (append1 (cdr lst1) lst2)))))
+  (lambda (q1 q2)
+    (if (null? q1) q2
+        (cons (car q1)
+              (append1 (cdr q1) q2)))))
 
 
 ;; Exercise 2.8.3
@@ -558,16 +558,16 @@ p(let ([lst (list a b c)])
 
 ;; Exercise 2.8.4
 (define list-ref
-  (lambda (lst nth)
+  (lambda (q nth)
     (if (= nth 0)
-        (car lst)
-        (list-ref (cdr lst) (- nth 1)))))
+        (car q)
+        (list-ref (cdr q) (- nth 1)))))
 
 (define list-tail
-  (lambda (lst nth)
+  (lambda (q nth)
     (if (= nth 0)
-        lst
-        (list-tail (cdr lst) (- nth 1)))))
+        q
+        (list-tail (cdr q) (- nth 1)))))
 
 
 ;; Exercise 2.8.5
@@ -594,10 +594,10 @@ p(let ([lst (list a b c)])
 
 ;; Exercise 2.8.7
 (define transpose
-  (lambda (lst)
+  (lambda (q)
     (cons
-     (map car lst)
-     (map cdr lst))))
+     (map car q)
+     (map cdr q))))
 
 (transpose '((a . 1) (b . 2) (c . 3))) ;; => ((a b c) 1 2 3)
 
@@ -605,3 +605,249 @@ p(let ([lst (list a b c)])
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; assignment
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; assignments done with set!
+(define kons-count 0)
+(define kons
+  (lambda (x y)
+    (set! kons-count (+ kons-count 1))
+    (cons x y)))
+
+;; first way of writing count function using global variable
+(define counter 0)
+(define count
+  (lambda ()
+    (let ([val counter])
+      (set! counter (+ counter 1))
+      val)))
+
+;; second way of writing count function using closure
+;; closure = returned function and its lexical environment
+(define count
+  (let ([counter 0])
+    (lambda ()
+      (let ([val counter])
+	(set! counter (+ counter 1))
+	val))))
+
+(define make-counter
+  (lambda (init)
+    (let ([counter init])
+      (lambda ()
+	(let ([val counter])
+	  (set! counter (+ counter 1))
+	  val)))))
+
+(let ([secret 0])
+  (set! shhh
+	(lambda (message)
+	  (set! secret message)))
+  (set! tell
+	(lambda ()
+	  secret)))
+
+(define lazy
+  (lambda (t)
+    (let ([val #f] [flag #f])
+      (lambda ()
+	(if (not flag)
+	    (begin (set! val (t))
+		   (set! flag #t)))
+	    val))))
+
+(define make-stack
+  (lambda ()
+    (let ([ls '()])
+      (lambda (message . args)
+	(cond [(eqv? message 'empty?) (null? ls)]
+	      [(eqv? message 'push!) (set! ls (cons (car args) ls))]
+	      [(eqv? message 'top) (car ls)]
+	      [(eqv? message 'pop!) (set! ls (cdr ls))]
+	      [else "oops"])))))
+
+#|
+
+|#
+(define make-queue
+  (lambda ()
+    (let ([end (cons 'ignored '())])
+      (cons end end))))
+
+(define putq!
+  (lambda (q v)
+    (let ([end (cons 'ignored '())])
+      (set-car! (cdr q) v)
+      (set-cdr! (cdr q) end)
+      (set-cdr! q end))))
+
+(define putq-v2!
+  (lambda (q v)
+    (let ([end (cons 'ignored '())])
+      (set-car! (car q) v)
+      (set-cdr! (car q) end)
+      (set-cdr! q end))))
+
+(define getq
+  (lambda (q)
+    (car (car q))))
+
+(define delq!
+  (lambda (q)
+    (set-car! q (cdr (car q)))))
+
+(define q1 (make-queue))
+(define q2 (make-queue))
+(putq! q1 2)
+(putq! q2 2)
+;;
+(putq! q1 1)
+(putq! q2 1)
+;;
+(putq! q1 4)
+(putq! q2 4)
+;;
+(delq! q1)
+(delq! q2)
+;;
+(putq! q1 10)
+(putq! q2 10)
+
+(assert (equal? q1 q2))
+(assert (eqv? (getq q1) (getq q2)))
+
+
+;; Exercise 2.9.1
+(define make-counter
+  (lambda (init)
+    (let ([counter init])
+      (lambda ()
+	(let ([val counter])
+	  (set! counter (+ counter 1))
+	  val)))))
+
+
+;; Exercise 2.9.2
+(define make-stack
+  (lambda ()
+    (let ([ls '()])
+      (lambda (message . args)
+	(case message
+	  [(empty? mt?) (null? ls)]
+	  [(ref) (list-ref ls (car args))]
+	  [(push!) (set! ls (cons (car args) ls))]
+	  [(top) (car ls)]
+	  [(pop!) (set! ls (cdr ls))]
+	  [(set!) (set-car! (list-tail ls (car args))
+			    (cadr args))]
+	  [else 'oops])))))
+
+
+;; Exercise 2.9.3
+(define make-stack
+  (lambda (n)
+    (let ([vc (make-vector n)]
+	  [top 0])
+      (lambda (message . args)
+	(case message
+	  [(debug) vc]
+	  [(empty? mt?) (= 0 top)]
+	  [(ref) (vector-ref vc (car args))]
+	  [(push!) (begin
+		     (vector-set! vc top (car args))
+		     (set! top (+ top 1)))]
+	  [(top) (vector-ref vc top)]
+	  [(pop!) (begin
+		    (vector-set! vc top '())
+		    (set! top (- top 1)))]
+	  [(set!) (vector-set! vc (car args) (cadr args))]
+	  [else 'oops])))))
+
+
+;; Exercise 2.9.4/5
+(define make-queue
+  (lambda ()
+    (let ([end (cons 'ignored '())])
+      (cons end end))))
+
+(define putq!
+  (lambda (q v)
+    (let ([end (cons 'ignored '())])
+      (set-car! (cdr q) v)
+      (set-cdr! (cdr q) end)
+      (set-cdr! q end))))
+
+(define putq-v2!
+  (lambda (q v)
+    (let ([end (cons 'ignored '())])
+      (set-car! (car q) v)
+      (set-cdr! (car q) end)
+      (set-cdr! q end))))
+
+(define emptyq?
+  (lambda (q)
+    (eqv? (caar q) 'ignored)))
+
+(define getq
+  (lambda (q)
+    (if (emptyq? q) (assertion-violation 'getq "empty queue" q))
+    (car (car q))))
+
+(define delq!
+  (lambda (q)
+    (if (emptyq? q) (assertion-violation 'delq! "empty queue" q))
+    (set-car! q (cdr (car q)))))
+
+
+;; Exercise 2.9.6
+(define make-queue
+  (lambda ()
+    (cons 'ignored '())))
+
+(define putq!
+  (lambda (q v)
+    (cond
+     [(null? q) (cons v '())]
+     [(mt? q) (set-car! q v)]
+     [else
+      (let ([tail (putq! (cdr q) v)])
+	(set-cdr! q tail)
+	(cons (car q) tail))])))
+
+(define mt?
+  (lambda (q)
+    (eqv? 'ignored (car q))))
+
+(define deleteq!
+  (lambda (q)
+    (cond [(mt? q) (assertion-violation 'deleteq! "empty queue" q)]
+	  [(null? (cdr q)) (set-car! q 'ignored)]
+	  [else (begin ;; '(1 2) -> '(2)
+		  (set-car! q (cadr q))
+		  (set-cdr! q (cddr q)))])))
+
+(define getq
+  (lambda (q)
+    (if (mt? q) (assertion-violation 'getq "empty queue" q)
+	(car q))))
+
+
+;; Exercise 2.9.7
+(define cyclic-list
+  (lambda ()
+    (let ([ls (cons 'a '())])
+      (set-cdr! ls ls)
+      ls))) ;; => Warning in pretty-print: cycle detected; proceeding with (print-graph #t)
+;; => #0=(a . #0#)
+
+(define my-length
+  (lambda (q)
+    (if (null? q)
+        0
+        (+ 1
+           (my-length (cdr q))))))
+(my-length (cyclic-list)) ;; => infinite recursion
+(length (cyclic-list)) ;; => can detect cycle
+
+
+;; Exercise 2.9.8
+
