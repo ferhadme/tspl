@@ -850,4 +850,23 @@ p(let ([q (list a b c)])
 
 
 ;; Exercise 2.9.8
+;; From
+;;   https://github.com/racket/racket/blob/master/racket/src/ChezScheme/s/5_2.ss#L23
+(define list?
+  (lambda (x)
+    (let loop ([hare x] [tortoise x])
+      (if (pair? hare)
+          (let ([hare (cdr hare)])
+            (if (pair? hare)
+                (and (not (eq? hare tortoise))
+                     (loop (cdr hare) (cdr tortoise)))
+                (null? hare)))
+          (null? hare)))))
 
+
+(simple-list? '()) ;; => #t
+(simple-list? '(1 2 3)) ;; => #t
+(simple-list? '(a . b)) ;; => #f
+(simple-list? (let ([ls (cons 'a '())])
+         (set-cdr! ls ls)
+         ls)) ;; => #f
