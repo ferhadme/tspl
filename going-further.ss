@@ -53,14 +53,6 @@
      (let ([t e1])
        (if t t (or e2 e3 ...)))]))
 
-(define-syntax or
-  (syntax-rules ()
-    [(_) #f]
-    [(_ e) e]
-    [(_ e1 e2 e3 ...)
-     (let ([t e1])
-       (if t t (or e2 e3 ...)))]))
-
 (define-syntax or ; incorrect!
   (syntax-rules ()
     [(_) #f]
@@ -70,3 +62,65 @@
 
 
 ;; Exercise 3.1.1
+;; (define ls '(a b c))
+(let ([x (memv 'a ls)])
+  (and x (memv 'b x)))
+;; First Expansion
+((lambda (x)
+   (and x (memv 'b x)))
+ (memv 'a ls))
+;; Second Expansion
+((lambda (x)
+   (if x
+       (if (memv 'b x)
+	   (memv 'b x) #f)))
+ (memv 'a ls))
+
+
+;; Exercise 3.1.2
+(or (memv x '(a b c)) (list x))
+;; First expansion
+(let ([t (memv x '(a b c))])
+  (if t t
+      (list x)))
+;; Second expansion
+((lambda (t)
+   (if t t
+       (list x)))
+ (memv x '(a b c)))
+
+
+;; Exercise 3.1.3
+(let* ([a 5] [b (+ a a)] [c (+ a b)])
+  (list a b c)) ;; => (5 10 15)
+
+(let ([a 5])
+  (let ([b (+ a a)])
+    (let ([c (+ a b)])
+      (list a b c)))) ;; => (5 10 15)
+
+(define-syntax let*
+  (syntax-rules ()
+    ((_ ((x e) ...) expr ...)
+     (let ()
+       (define x e) ...
+       expr ...))))
+
+
+;; Exercise 3.1.4
+(let ([x 3])
+  (unless (= x 0) (set! x (+ x 1)))
+  (when (= x 4) (set! x (* x 2)))
+  x) ;; => 8
+
+(define-syntax when
+  (syntax-rules ()
+    ((_ pred expr ...)
+     (if pred
+	 (begin
+	   expr ...)))))
+
+(define-syntax unless
+  (syntax-rules ()
+    ((_ pred expr ...)
+     (when (not pred) expr ...))))
